@@ -461,7 +461,7 @@ func Run(ctx *cli.Context) error {
 		prefix = Namespace + "."
 	}
 	if len(Type) > 0 {
-		prefix = prefix + Type + "."
+		prefix = prefix + Type
 	}
 
 	// Setup the web resolver
