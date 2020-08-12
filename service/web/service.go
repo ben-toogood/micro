@@ -1,4 +1,5 @@
-package service
+// Package web provides web based micro services
+package web
 
 import (
 	"context"
@@ -24,6 +25,25 @@ import (
 	muregistry "github.com/micro/micro/v3/service/registry"
 	muserver "github.com/micro/micro/v3/service/server"
 )
+
+// Service is a web service with service discovery built in
+type Service interface {
+	Handle(pattern string, handler http.Handler)
+	HandleFunc(pattern string, handler func(http.ResponseWriter, *http.Request))
+	Run() error
+}
+
+// NewService returns a new web service
+func NewService(opts ...service.Option) Service {
+	s := &webService{
+		mux:     http.NewServeMux(),
+		context: context.TODO(),
+		Service: service.New(opts...),
+	}
+
+	s.srv = s.genSrv()
+	return s
+}
 
 type webService struct {
 	context context.Context
