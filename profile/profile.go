@@ -168,6 +168,23 @@ var Test = &Profile{
 	},
 }
 
+// Production is for running the micro Production
+var Production = &Profile{
+	Name: "production",
+	Setup: func(ctx *cli.Context) error {
+		microAuth.DefaultAuth = noop.NewAuth()
+		microConfig.DefaultConfig, _ = config.NewConfig()
+		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
+		setRegistry(etcd.NewRegistry(registry.Addrs("etcd-cluster")))
+
+		// the cockroach store will connect immediately so the address must be passed
+		// when the store is created. The cockroach store address contains the location
+		// of certs so it can't be defaulted like the broker and registry.
+		microStore.DefaultStore = cockroach.NewStore(store.Nodes(ctx.String("store_address")))
+		return nil
+	},
+}
+
 func setRegistry(reg registry.Registry) {
 	microRegistry.DefaultRegistry = reg
 	microRouter.DefaultRouter = regRouter.NewRouter(router.Registry(reg))
