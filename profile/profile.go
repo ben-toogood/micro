@@ -145,7 +145,12 @@ var Platform = &Profile{
 		// the cockroach store will connect immediately so the address must be passed
 		// when the store is created. The cockroach store address contains the location
 		// of certs so it can't be defaulted like the broker and registry.
-		microStore.DefaultStore = cockroach.NewStore(store.Nodes(ctx.String("store_address")))
+		addr := ctx.String("store_address")
+		if len(addr) == 0 {
+			addr = "postgresql://root@cockroachdb-cluster-public:26257?sslmode=disable"
+		}
+
+		microStore.DefaultStore = cockroach.NewStore(store.Nodes(addr))
 		return nil
 	},
 }
