@@ -50,6 +50,7 @@ var profiles = map[string]*Profile{
 	"platform":   Platform,
 	"client":     Client,
 	"service":    Service,
+	"production": Production,
 }
 
 // Profile configures an environment
