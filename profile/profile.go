@@ -50,7 +50,6 @@ var profiles = map[string]*Profile{
 	"platform":   Platform,
 	"client":     Client,
 	"service":    Service,
-	"production": Production,
 }
 
 // Profile configures an environment
@@ -146,12 +145,7 @@ var Platform = &Profile{
 		// the cockroach store will connect immediately so the address must be passed
 		// when the store is created. The cockroach store address contains the location
 		// of certs so it can't be defaulted like the broker and registry.
-		addr := ctx.String("store_address")
-		if len(addr) == 0 {
-			addr = "postgresql://root@cockroachdb-cluster-public:26257?sslmode=disable"
-		}
-
-		microStore.DefaultStore = cockroach.NewStore(store.Nodes(addr))
+		microStore.DefaultStore = cockroach.NewStore(store.Nodes(ctx.String("store_address")))
 		return nil
 	},
 }
@@ -170,23 +164,6 @@ var Test = &Profile{
 		microStore.DefaultStore = mem.NewStore()
 		microConfig.DefaultConfig, _ = config.NewConfig()
 		setRegistry(memory.NewRegistry())
-		return nil
-	},
-}
-
-// Production is for running the micro Production
-var Production = &Profile{
-	Name: "production",
-	Setup: func(ctx *cli.Context) error {
-		microAuth.DefaultAuth = noop.NewAuth()
-		microConfig.DefaultConfig, _ = config.NewConfig()
-		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
-		setRegistry(etcd.NewRegistry(registry.Addrs("etcd-cluster")))
-
-		// the cockroach store will connect immediately so the address must be passed
-		// when the store is created. The cockroach store address contains the location
-		// of certs so it can't be defaulted like the broker and registry.
-		microStore.DefaultStore = cockroach.NewStore(store.Nodes(ctx.String("store_address")))
 		return nil
 	},
 }
