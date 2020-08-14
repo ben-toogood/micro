@@ -33,7 +33,6 @@ var prodClient = &Profile{
 	Name: "prod-client",
 	Setup: func(ctx *cli.Context) error {
 		microAuth.DefaultAuth = noop.NewAuth()
-		microConfig.DefaultConfig, _ = config.NewConfig()
 		microRegistry.DefaultRegistry.Init(registry.Addrs("micro-registry:8000"))
 		return nil
 	},
