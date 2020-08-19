@@ -116,6 +116,7 @@ var Local = &Profile{
 		microAuth.DefaultAuth = noop.NewAuth()
 		microRuntime.DefaultRuntime = local.NewRuntime()
 		microStore.DefaultStore = file.NewStore()
+		microConfig.DefaultConfig, _ = config.NewConfig()
 		setBroker(http.NewBroker())
 		setRegistry(mdns.NewRegistry())
 		setupJWTRules()
