@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -22,7 +23,9 @@ import (
 	"github.com/micro/micro/v3/client/cli/namespace"
 	"github.com/micro/micro/v3/client/cli/util"
 	cliutil "github.com/micro/micro/v3/client/cli/util"
+	"github.com/micro/micro/v3/internal/config"
 	muclient "github.com/micro/micro/v3/service/client"
+	"github.com/micro/micro/v3/service/context"
 	"github.com/micro/micro/v3/service/logger"
 	"github.com/micro/micro/v3/service/runtime"
 	"github.com/micro/micro/v3/service/runtime/server"
@@ -49,6 +52,10 @@ var (
 	DefaultRetries = 3
 	// DefaultImage which should be run
 	DefaultImage = "micro/cells:go"
+)
+
+const (
+	credentialsKey = "GIT_CREDENTIALS"
 )
 
 // timeAgo returns the time passed
@@ -80,16 +87,57 @@ func sourceExists(source *git.Source) error {
 	if ref == "" || ref == "latest" {
 		ref = "master"
 	}
-	url := fmt.Sprintf("https://%v/tree/%v/%v", source.Repo, ref, source.Folder)
-	resp, err := http.Get(url)
-	// @todo gracefully degrade?
-	if err != nil {
-		return err
+
+	sourceExistsAt := func(url string, source *git.Source) error {
+		req, _ := http.NewRequest("GET", url, nil)
+
+		// add the git credentials if set
+		if creds, ok := getGitCredentials(source.Repo); ok {
+			req.Header.Set("Authorization", "token "+creds)
+		}
+
+		client := new(http.Client)
+		resp, err := client.Do(req)
+
+		// @todo gracefully degrade?
+		if err != nil {
+			return err
+		}
+		if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+			return fmt.Errorf("service at %v@%v not found", source.Repo, ref)
+		}
+		return nil
 	}
-	if resp.StatusCode >= 400 && resp.StatusCode < 500 {
-		return fmt.Errorf("service at '%v' not found", url)
+
+	if strings.Contains(source.Repo, "github") {
+		// Github specific existence checs
+		repo := strings.ReplaceAll(source.Repo, "github.com/", "")
+		url := fmt.Sprintf("https://api.github.com/repos/%v/contents/%v?ref=%v", repo, source.Folder, ref)
+		return sourceExistsAt(url, source)
+	} else if strings.Contains(source.Repo, "gitlab") {
+		// Gitlab specific existence checks
+
+		// @todo better check for gitlab
+		url := fmt.Sprintf("https://%v", source.Repo)
+		return sourceExistsAt(url, source)
 	}
 	return nil
+}
+
+func appendSourceBase(ctx *cli.Context, workDir, source string) string {
+	isLocal, _ := git.IsLocal(workDir, source)
+	// @todo add list of supported hosts here or do this check better
+	if !isLocal && !strings.Contains(source, ".com") && !strings.Contains(source, ".org") && !strings.Contains(source, ".net") {
+		baseURL, _ := config.Get("git", util.GetEnv(ctx).Name, "baseurl")
+		if len(baseURL) == 0 {
+			baseURL, _ = config.Get("git", "baseurl")
+		}
+		if len(baseURL) == 0 {
+			return path.Join("github.com/micro/services", source)
+		}
+		return path.Join(baseURL, source)
+	}
+	return source
 }
 
 func runService(ctx *cli.Context) error {
@@ -103,7 +151,8 @@ func runService(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	source, err := git.ParseSourceLocal(wd, ctx.Args().Get(0))
+
+	source, err := git.ParseSourceLocal(wd, appendSourceBase(ctx, wd, ctx.Args().Get(0)))
 	if err != nil {
 		return err
 	}
@@ -141,12 +190,12 @@ func runService(ctx *cli.Context) error {
 	var image = DefaultImage
 	if ctx.IsSet("image") {
 		image = ctx.String("image")
-	} else {
-		// when using the micro/cells:go image, we pass the source as the argument
-		args = runtimeSource
-		if len(source.Ref) > 0 {
-			args += "@" + source.Ref
-		}
+	}
+
+	// when using the micro/cells:go image, we pass the source as the argument
+	args = runtimeSource
+	if len(source.Ref) > 0 {
+		args += "@" + source.Ref
 	}
 
 	// specify the options
@@ -185,6 +234,10 @@ func runService(ctx *cli.Context) error {
 		return err
 	}
 	opts = append(opts, goruntime.CreateNamespace(ns))
+	gitCreds, ok := getGitCredentials(source.Repo)
+	if ok {
+		opts = append(opts, goruntime.WithSecret(credentialsKey, gitCreds))
+	}
 
 	// run the service
 	service := &goruntime.Service{
@@ -210,6 +263,25 @@ func runService(ctx *cli.Context) error {
 	return nil
 }
 
+func getGitCredentials(repo string) (string, bool) {
+	repo = strings.Split(repo, "/")[0]
+	switch {
+	case strings.Contains(repo, "github"):
+		if creds, err := config.Get("git", "github", "credentials"); err == nil && len(creds) > 0 {
+			return creds, true
+		}
+	case strings.Contains(repo, "gitlab"):
+		if creds, err := config.Get("git", "gitlab", "credentials"); err == nil && len(creds) > 0 {
+			return creds, true
+		}
+	case strings.Contains(repo, "bitbucket"):
+		if creds, err := config.Get("git", "bitbucket", "credentials"); err == nil && len(creds) > 0 {
+			return creds, true
+		}
+	}
+	return "", false
+}
+
 func killService(ctx *cli.Context) error {
 	// we need some args to run
 	if ctx.Args().Len() == 0 {
@@ -221,7 +293,7 @@ func killService(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	source, err := git.ParseSourceLocal(wd, ctx.Args().Get(0))
+	source, err := git.ParseSourceLocal(wd, appendSourceBase(ctx, wd, ctx.Args().Get(0)))
 	if err != nil {
 		return err
 	}
@@ -269,7 +341,7 @@ func upload(ctx *cli.Context, source *git.Source) (string, error) {
 	if err := grepMain(source.FullPath); err != nil {
 		return "", err
 	}
-	uploadedFileName := strings.ReplaceAll(source.Folder, string(filepath.Separator), "-") + ".tar.gz"
+	uploadedFileName := filepath.Base(source.Folder) + ".tar.gz"
 	path := filepath.Join(os.TempDir(), uploadedFileName)
 
 	var err error
@@ -286,11 +358,18 @@ func upload(ctx *cli.Context, source *git.Source) (string, error) {
 		return "", err
 	}
 	cli := muclient.DefaultClient
-	err = file.New("server", cli).Upload(uploadedFileName, path)
+	err = file.New("server", cli, file.WithContext(context.DefaultContext)).Upload(uploadedFileName, path)
 	if err != nil {
 		return "", err
 	}
-	return uploadedFileName, nil
+	// ie. if relative folder path to repo root is `test/service/example`
+	// file name becomes `example.tar.gz/test/service`
+	parts := strings.Split(source.Folder, "/")
+	if len(parts) == 1 {
+		return uploadedFileName, nil
+	}
+	allButLastDir := parts[0 : len(parts)-1]
+	return filepath.Join(append([]string{uploadedFileName}, allButLastDir...)...), nil
 }
 
 func updateService(ctx *cli.Context) error {
@@ -304,7 +383,7 @@ func updateService(ctx *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	source, err := git.ParseSourceLocal(wd, ctx.Args().Get(0))
+	source, err := git.ParseSourceLocal(wd, appendSourceBase(ctx, wd, ctx.Args().Get(0)))
 	if err != nil {
 		return err
 	}
@@ -337,6 +416,11 @@ func updateService(ctx *cli.Context) error {
 		return err
 	}
 
+	opts := []goruntime.UpdateOption{goruntime.UpdateNamespace(ns)}
+	gitCreds, ok := getGitCredentials(source.Repo)
+	if ok {
+		opts = append(opts, goruntime.UpdateSecret(credentialsKey, gitCreds))
+	}
 	return runtime.Update(service, goruntime.UpdateNamespace(ns))
 }
 
@@ -431,14 +515,17 @@ func getService(ctx *cli.Context) error {
 	fmt.Fprintln(writer, "NAME\tVERSION\tSOURCE\tSTATUS\tBUILD\tUPDATED\tMETADATA")
 	for _, service := range services {
 		status := parse(service.Metadata["status"])
-		if status == "error" {
-			status = service.Metadata["error"]
-		}
 
 		// cut the commit down to first 7 characters
 		build := parse(service.Metadata["build"])
 		if len(build) > 7 {
 			build = build[:7]
+		}
+
+		// if there is an error, display this in metadata (there is no error field)
+		metadata := fmt.Sprintf("owner=%s, group=%s", parse(service.Metadata["owner"]), parse(service.Metadata["group"]))
+		if status == "error" {
+			metadata = fmt.Sprintf("%v, error=%v", metadata, parse(service.Metadata["error"]))
 		}
 
 		// parse when the service was started
@@ -451,7 +538,7 @@ func getService(ctx *cli.Context) error {
 			strings.ToLower(status),
 			build,
 			updated,
-			fmt.Sprintf("owner=%s,group=%s", parse(service.Metadata["owner"]), parse(service.Metadata["group"])))
+			metadata)
 	}
 	writer.Flush()
 	return nil
