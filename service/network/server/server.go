@@ -10,16 +10,16 @@ import (
 	"github.com/micro/cli/v2"
 	net "github.com/micro/go-micro/v3/network"
 	"github.com/micro/go-micro/v3/network/mucp"
+	"github.com/micro/go-micro/v3/network/transport"
+	"github.com/micro/go-micro/v3/network/transport/grpc"
+	"github.com/micro/go-micro/v3/network/tunnel"
+	tmucp "github.com/micro/go-micro/v3/network/tunnel/mucp"
 	"github.com/micro/go-micro/v3/proxy"
-	//grpcProxy "github.com/micro/go-micro/v3/proxy/grpc"
+	grpcProxy "github.com/micro/go-micro/v3/proxy/grpc"
 	mucpProxy "github.com/micro/go-micro/v3/proxy/mucp"
 	"github.com/micro/go-micro/v3/router"
 	"github.com/micro/go-micro/v3/server"
 	mucpServer "github.com/micro/go-micro/v3/server/mucp"
-	"github.com/micro/go-micro/v3/transport"
-	"github.com/micro/go-micro/v3/transport/quic"
-	"github.com/micro/go-micro/v3/tunnel"
-	tmucp "github.com/micro/go-micro/v3/tunnel/mucp"
 	"github.com/micro/micro/v3/internal/helper"
 	"github.com/micro/micro/v3/internal/muxer"
 	"github.com/micro/micro/v3/service"
@@ -124,7 +124,7 @@ func Run(ctx *cli.Context) error {
 		config.InsecureSkipVerify = true
 
 		tunOpts = append(tunOpts, tunnel.Transport(
-			quic.NewTransport(transport.TLSConfig(config)),
+			grpc.NewTransport(transport.TLSConfig(config)),
 		))
 	}
 
@@ -140,7 +140,7 @@ func Run(ctx *cli.Context) error {
 		router.Id(id),
 		router.Registry(muregistry.DefaultRegistry),
 		router.Gateway(gateway),
-		router.Precache(),
+		router.Cache(),
 	)
 
 	// create new network
@@ -156,10 +156,10 @@ func Run(ctx *cli.Context) error {
 
 	// local proxy using grpc
 	// TODO: reenable after PR
-	//localProxy := grpcProxy.NewProxy(
-	//	proxy.WithRouter(rtr),
-	//	proxy.WithClient(service.Client()),
-	//)
+	localProxy := grpcProxy.NewProxy(
+		proxy.WithRouter(rtr),
+		proxy.WithClient(service.Client()),
+	)
 
 	// network proxy
 	// used by the network nodes to cluster
@@ -180,14 +180,14 @@ func Run(ctx *cli.Context) error {
 	mucpServer.DefaultRouter.Handle(h)
 
 	// local mux
-	//localMux := muxer.New(name, localProxy)
+	localMux := muxer.New(name, localProxy)
 
 	// network mux
 	networkMux := muxer.New(name, networkProxy)
 
 	// init the local grpc server
 	service.Server().Init(
-		server.WithRouter(networkMux),
+		server.WithRouter(localMux),
 	)
 
 	// set network server to proxy

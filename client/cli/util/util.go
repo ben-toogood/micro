@@ -55,7 +55,7 @@ var defaultEnvs = map[string]Env{
 	},
 }
 
-func isBuiltinService(command string) bool {
+func IsBuiltInService(command string) bool {
 	for _, service := range services {
 		if command == service {
 			return true
@@ -78,7 +78,7 @@ func CLIProxyAddress(ctx *cli.Context) string {
 	}
 
 	// fix for "micro service [command]", e.g "micro service auth"
-	if ctx.Args().First() == "service" && isBuiltinService(ctx.Args().Get(1)) {
+	if ctx.Args().First() == "service" && IsBuiltInService(ctx.Args().Get(1)) {
 		return ""
 	}
 

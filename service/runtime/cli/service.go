@@ -18,7 +18,7 @@ import (
 	"github.com/micro/cli/v2"
 	golog "github.com/micro/go-micro/v3/logger"
 	goruntime "github.com/micro/go-micro/v3/runtime"
-	"github.com/micro/go-micro/v3/runtime/local/git"
+	"github.com/micro/go-micro/v3/runtime/local/source/git"
 	"github.com/micro/go-micro/v3/util/file"
 	"github.com/micro/micro/v3/client/cli/namespace"
 	"github.com/micro/micro/v3/client/cli/util"
@@ -51,7 +51,9 @@ var (
 	// DefaultRetries which should be attempted when starting a service
 	DefaultRetries = 3
 	// DefaultImage which should be run
-	DefaultImage = "micro/cells:go"
+	DefaultImage = "micro/cells:micro"
+	// Git orgs we currently support for credentials
+	GitOrgs = []string{"github", "bitbucket", "gitlab"}
 )
 
 const (
@@ -265,20 +267,19 @@ func runService(ctx *cli.Context) error {
 
 func getGitCredentials(repo string) (string, bool) {
 	repo = strings.Split(repo, "/")[0]
-	switch {
-	case strings.Contains(repo, "github"):
-		if creds, err := config.Get("git", "github", "credentials"); err == nil && len(creds) > 0 {
-			return creds, true
+
+	for _, org := range GitOrgs {
+		if !strings.Contains(repo, org) {
+			continue
 		}
-	case strings.Contains(repo, "gitlab"):
-		if creds, err := config.Get("git", "gitlab", "credentials"); err == nil && len(creds) > 0 {
-			return creds, true
-		}
-	case strings.Contains(repo, "bitbucket"):
-		if creds, err := config.Get("git", "bitbucket", "credentials"); err == nil && len(creds) > 0 {
+
+		// check the creds for the org
+		creds, err := config.Get("git", "credentials", org)
+		if err == nil && len(creds) > 0 {
 			return creds, true
 		}
 	}
+
 	return "", false
 }
 

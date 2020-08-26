@@ -57,7 +57,7 @@ func (s *srv) Context() goctx.Context {
 	if len(s.Table) > 0 {
 		md["Micro-Table"] = s.Table
 	}
-	return metadata.NewContext(ctx, md)
+	return metadata.MergeContext(ctx, md, true)
 }
 
 // Sync all the known records
@@ -175,11 +175,6 @@ func (s *srv) Write(record *store.Record, opts ...store.WriteOption) error {
 	writeOpts := &pb.WriteOptions{
 		Database: options.Database,
 		Table:    options.Table,
-	}
-	if !options.Expiry.IsZero() {
-		writeOpts.Expiry = options.Expiry.Unix()
-	} else if options.TTL != 0 {
-		writeOpts.Ttl = int64(options.TTL.Seconds())
 	}
 
 	metadata := make(map[string]*pb.Field)

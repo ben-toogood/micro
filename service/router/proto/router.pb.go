@@ -76,14 +76,16 @@ func (EventType) EnumDescriptor() ([]byte, []int) {
 }
 
 // Empty request
-type Request struct {
+type ReadRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
 }
 
-func (x *Request) Reset() {
-	*x = Request{}
+func (x *ReadRequest) Reset() {
+	*x = ReadRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -91,13 +93,13 @@ func (x *Request) Reset() {
 	}
 }
 
-func (x *Request) String() string {
+func (x *ReadRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Request) ProtoMessage() {}
+func (*ReadRequest) ProtoMessage() {}
 
-func (x *Request) ProtoReflect() protoreflect.Message {
+func (x *ReadRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -109,20 +111,29 @@ func (x *Request) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Request.ProtoReflect.Descriptor instead.
-func (*Request) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReadRequest.ProtoReflect.Descriptor instead.
+func (*ReadRequest) Descriptor() ([]byte, []int) {
 	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *ReadRequest) GetService() string {
+	if x != nil {
+		return x.Service
+	}
+	return ""
+}
+
 // Empty response
-type Response struct {
+type ReadResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Routes []*Route `protobuf:"bytes,1,rep,name=routes,proto3" json:"routes,omitempty"`
 }
 
-func (x *Response) Reset() {
-	*x = Response{}
+func (x *ReadResponse) Reset() {
+	*x = ReadResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -130,13 +141,13 @@ func (x *Response) Reset() {
 	}
 }
 
-func (x *Response) String() string {
+func (x *ReadResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Response) ProtoMessage() {}
+func (*ReadResponse) ProtoMessage() {}
 
-func (x *Response) ProtoReflect() protoreflect.Message {
+func (x *ReadResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -148,53 +159,12 @@ func (x *Response) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Response.ProtoReflect.Descriptor instead.
-func (*Response) Descriptor() ([]byte, []int) {
+// Deprecated: Use ReadResponse.ProtoReflect.Descriptor instead.
+func (*ReadResponse) Descriptor() ([]byte, []int) {
 	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{1}
 }
 
-// ListResponse is returned by List
-type ListResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Routes []*Route `protobuf:"bytes,1,rep,name=routes,proto3" json:"routes,omitempty"`
-}
-
-func (x *ListResponse) Reset() {
-	*x = ListResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[2]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *ListResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ListResponse) ProtoMessage() {}
-
-func (x *ListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[2]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ListResponse.ProtoReflect.Descriptor instead.
-func (*ListResponse) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *ListResponse) GetRoutes() []*Route {
+func (x *ReadResponse) GetRoutes() []*Route {
 	if x != nil {
 		return x.Routes
 	}
@@ -207,13 +177,14 @@ type LookupRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Query *Query `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	Service string         `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
+	Options *LookupOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
 }
 
 func (x *LookupRequest) Reset() {
 	*x = LookupRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[3]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -226,7 +197,7 @@ func (x *LookupRequest) String() string {
 func (*LookupRequest) ProtoMessage() {}
 
 func (x *LookupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[3]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -239,12 +210,19 @@ func (x *LookupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupRequest.ProtoReflect.Descriptor instead.
 func (*LookupRequest) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{3}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *LookupRequest) GetQuery() *Query {
+func (x *LookupRequest) GetService() string {
 	if x != nil {
-		return x.Query
+		return x.Service
+	}
+	return ""
+}
+
+func (x *LookupRequest) GetOptions() *LookupOptions {
+	if x != nil {
+		return x.Options
 	}
 	return nil
 }
@@ -261,7 +239,7 @@ type LookupResponse struct {
 func (x *LookupResponse) Reset() {
 	*x = LookupResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[4]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -274,7 +252,7 @@ func (x *LookupResponse) String() string {
 func (*LookupResponse) ProtoMessage() {}
 
 func (x *LookupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[4]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -287,106 +265,10 @@ func (x *LookupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookupResponse.ProtoReflect.Descriptor instead.
 func (*LookupResponse) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{4}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *LookupResponse) GetRoutes() []*Route {
-	if x != nil {
-		return x.Routes
-	}
-	return nil
-}
-
-// QueryRequest queries Table for Routes
-type QueryRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Query *Query `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
-}
-
-func (x *QueryRequest) Reset() {
-	*x = QueryRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[5]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryRequest) ProtoMessage() {}
-
-func (x *QueryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[5]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QueryRequest.ProtoReflect.Descriptor instead.
-func (*QueryRequest) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *QueryRequest) GetQuery() *Query {
-	if x != nil {
-		return x.Query
-	}
-	return nil
-}
-
-// QueryResponse is returned by Query
-type QueryResponse struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Routes []*Route `protobuf:"bytes,1,rep,name=routes,proto3" json:"routes,omitempty"`
-}
-
-func (x *QueryResponse) Reset() {
-	*x = QueryResponse{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[6]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *QueryResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*QueryResponse) ProtoMessage() {}
-
-func (x *QueryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[6]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use QueryResponse.ProtoReflect.Descriptor instead.
-func (*QueryResponse) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{6}
-}
-
-func (x *QueryResponse) GetRoutes() []*Route {
 	if x != nil {
 		return x.Routes
 	}
@@ -403,7 +285,7 @@ type WatchRequest struct {
 func (x *WatchRequest) Reset() {
 	*x = WatchRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[7]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -416,7 +298,7 @@ func (x *WatchRequest) String() string {
 func (*WatchRequest) ProtoMessage() {}
 
 func (x *WatchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[7]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -429,7 +311,7 @@ func (x *WatchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WatchRequest.ProtoReflect.Descriptor instead.
 func (*WatchRequest) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{7}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{4}
 }
 
 // CreateResponse is returned by Create
@@ -442,7 +324,7 @@ type CreateResponse struct {
 func (x *CreateResponse) Reset() {
 	*x = CreateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[8]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -455,7 +337,7 @@ func (x *CreateResponse) String() string {
 func (*CreateResponse) ProtoMessage() {}
 
 func (x *CreateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[8]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -468,7 +350,7 @@ func (x *CreateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateResponse.ProtoReflect.Descriptor instead.
 func (*CreateResponse) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{8}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{5}
 }
 
 // DeleteResponse is returned by Delete
@@ -481,7 +363,7 @@ type DeleteResponse struct {
 func (x *DeleteResponse) Reset() {
 	*x = DeleteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[9]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -494,7 +376,7 @@ func (x *DeleteResponse) String() string {
 func (*DeleteResponse) ProtoMessage() {}
 
 func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[9]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -507,7 +389,7 @@ func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteResponse.ProtoReflect.Descriptor instead.
 func (*DeleteResponse) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{9}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{6}
 }
 
 // UpdateResponse is returned by Update
@@ -520,7 +402,7 @@ type UpdateResponse struct {
 func (x *UpdateResponse) Reset() {
 	*x = UpdateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[10]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -533,7 +415,7 @@ func (x *UpdateResponse) String() string {
 func (*UpdateResponse) ProtoMessage() {}
 
 func (x *UpdateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[10]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -546,7 +428,7 @@ func (x *UpdateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateResponse.ProtoReflect.Descriptor instead.
 func (*UpdateResponse) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{10}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{7}
 }
 
 // Event is routing table event
@@ -568,7 +450,7 @@ type Event struct {
 func (x *Event) Reset() {
 	*x = Event{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[11]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -581,7 +463,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[11]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -594,7 +476,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{11}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Event) GetId() string {
@@ -625,37 +507,36 @@ func (x *Event) GetRoute() *Route {
 	return nil
 }
 
-// Query is passed in a LookupRequest
-type Query struct {
+// LookupOptions are passed in a LookupRequest
+type LookupOptions struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// service to lookup
-	Service string `protobuf:"bytes,1,opt,name=service,proto3" json:"service,omitempty"`
-	// gateway to lookup
+	Address string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	Gateway string `protobuf:"bytes,2,opt,name=gateway,proto3" json:"gateway,omitempty"`
-	// network to lookup
 	Network string `protobuf:"bytes,3,opt,name=network,proto3" json:"network,omitempty"`
+	Router  string `protobuf:"bytes,4,opt,name=router,proto3" json:"router,omitempty"`
+	Link    string `protobuf:"bytes,5,opt,name=link,proto3" json:"link,omitempty"`
 }
 
-func (x *Query) Reset() {
-	*x = Query{}
+func (x *LookupOptions) Reset() {
+	*x = LookupOptions{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[12]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
 }
 
-func (x *Query) String() string {
+func (x *LookupOptions) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Query) ProtoMessage() {}
+func (*LookupOptions) ProtoMessage() {}
 
-func (x *Query) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[12]
+func (x *LookupOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -666,28 +547,42 @@ func (x *Query) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Query.ProtoReflect.Descriptor instead.
-func (*Query) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{12}
+// Deprecated: Use LookupOptions.ProtoReflect.Descriptor instead.
+func (*LookupOptions) Descriptor() ([]byte, []int) {
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *Query) GetService() string {
+func (x *LookupOptions) GetAddress() string {
 	if x != nil {
-		return x.Service
+		return x.Address
 	}
 	return ""
 }
 
-func (x *Query) GetGateway() string {
+func (x *LookupOptions) GetGateway() string {
 	if x != nil {
 		return x.Gateway
 	}
 	return ""
 }
 
-func (x *Query) GetNetwork() string {
+func (x *LookupOptions) GetNetwork() string {
 	if x != nil {
 		return x.Network
+	}
+	return ""
+}
+
+func (x *LookupOptions) GetRouter() string {
+	if x != nil {
+		return x.Router
+	}
+	return ""
+}
+
+func (x *LookupOptions) GetLink() string {
+	if x != nil {
+		return x.Link
 	}
 	return ""
 }
@@ -719,7 +614,7 @@ type Route struct {
 func (x *Route) Reset() {
 	*x = Route{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[13]
+		mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -732,7 +627,7 @@ func (x *Route) String() string {
 func (*Route) ProtoMessage() {}
 
 func (x *Route) ProtoReflect() protoreflect.Message {
-	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[13]
+	mi := &file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -745,7 +640,7 @@ func (x *Route) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Route.ProtoReflect.Descriptor instead.
 func (*Route) Descriptor() ([]byte, []int) {
-	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{13}
+	return file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Route) GetService() string {
@@ -811,43 +706,43 @@ var file_github_com_micro_micro_service_router_proto_router_proto_rawDesc = []by
 	0x72, 0x6f, 0x2f, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x2f, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x72, 0x6f,
 	0x75, 0x74, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06, 0x72, 0x6f, 0x75, 0x74,
-	0x65, 0x72, 0x22, 0x09, 0x0a, 0x07, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x0a, 0x0a,
-	0x08, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x35, 0x0a, 0x0c, 0x4c, 0x69, 0x73,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x6f, 0x75,
-	0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x72, 0x6f, 0x75, 0x74,
-	0x65, 0x72, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x73,
-	0x22, 0x34, 0x0a, 0x0d, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x12, 0x23, 0x0a, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x0d, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52,
-	0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x22, 0x37, 0x0a, 0x0e, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x6f, 0x75, 0x74,
-	0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65,
-	0x72, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x73, 0x22,
-	0x33, 0x0a, 0x0c, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
-	0x23, 0x0a, 0x05, 0x71, 0x75, 0x65, 0x72, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d,
-	0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x05, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x22, 0x36, 0x0a, 0x0d, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x73, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52,
-	0x6f, 0x75, 0x74, 0x65, 0x52, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x73, 0x22, 0x0e, 0x0a, 0x0c,
-	0x57, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x10, 0x0a, 0x0e,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x10,
-	0x0a, 0x0e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x10, 0x0a, 0x0e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x81, 0x01, 0x0a, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x0e, 0x0a, 0x02,
-	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x04,
-	0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x11, 0x2e, 0x72, 0x6f, 0x75,
-	0x74, 0x65, 0x72, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x04, 0x74,
-	0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d,
-	0x70, 0x12, 0x23, 0x0a, 0x05, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b,
+	0x65, 0x72, 0x22, 0x27, 0x0a, 0x0b, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x22, 0x35, 0x0a, 0x0c, 0x52,
+	0x65, 0x61, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x25, 0x0a, 0x06, 0x72,
+	0x6f, 0x75, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x72, 0x6f,
+	0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x06, 0x72, 0x6f, 0x75, 0x74,
+	0x65, 0x73, 0x22, 0x5a, 0x0a, 0x0d, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x2f, 0x0a,
+	0x07, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x15,
+	0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x4f, 0x70,
+	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x07, 0x6f, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x22, 0x37,
+	0x0a, 0x0e, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x25, 0x0a, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
 	0x32, 0x0d, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52,
-	0x05, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x22, 0x55, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12,
-	0x18, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x61, 0x74,
-	0x65, 0x77, 0x61, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x61, 0x74, 0x65,
-	0x77, 0x61, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x22, 0xa9, 0x02,
+	0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x73, 0x22, 0x0e, 0x0a, 0x0c, 0x57, 0x61, 0x74, 0x63, 0x68,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x10, 0x0a, 0x0e, 0x43, 0x72, 0x65, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x10, 0x0a, 0x0e, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x10, 0x0a, 0x0e, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x81, 0x01,
+	0x0a, 0x05, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x25, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x11, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x1c,
+	0x0a, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x09, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x12, 0x23, 0x0a, 0x05,
+	0x72, 0x6f, 0x75, 0x74, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x72, 0x6f,
+	0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x52, 0x05, 0x72, 0x6f, 0x75, 0x74,
+	0x65, 0x22, 0x89, 0x01, 0x0a, 0x0d, 0x4c, 0x6f, 0x6f, 0x6b, 0x75, 0x70, 0x4f, 0x70, 0x74, 0x69,
+	0x6f, 0x6e, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x18, 0x0a,
+	0x07, 0x67, 0x61, 0x74, 0x65, 0x77, 0x61, 0x79, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x67, 0x61, 0x74, 0x65, 0x77, 0x61, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f,
+	0x72, 0x6b, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x12, 0x16, 0x0a, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x06, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x69, 0x6e,
+	0x6b, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x69, 0x6e, 0x6b, 0x22, 0xa9, 0x02,
 	0x0a, 0x05, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63,
 	0x65, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01,
@@ -877,7 +772,7 @@ var file_github_com_micro_micro_service_router_proto_router_proto_rawDesc = []by
 	0x30, 0x0a, 0x05, 0x57, 0x61, 0x74, 0x63, 0x68, 0x12, 0x14, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65,
 	0x72, 0x2e, 0x57, 0x61, 0x74, 0x63, 0x68, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x0d,
 	0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x22, 0x00, 0x30,
-	0x01, 0x32, 0x89, 0x02, 0x0a, 0x05, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x31, 0x0a, 0x06, 0x43,
+	0x01, 0x32, 0xd5, 0x01, 0x0a, 0x05, 0x54, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x31, 0x0a, 0x06, 0x43,
 	0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x0d, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52,
 	0x6f, 0x75, 0x74, 0x65, 0x1a, 0x16, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x72,
 	0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x31,
@@ -887,17 +782,14 @@ var file_github_com_micro_micro_service_router_proto_router_proto_rawDesc = []by
 	0x00, 0x12, 0x31, 0x0a, 0x06, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x12, 0x0d, 0x2e, 0x72, 0x6f,
 	0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x6f, 0x75, 0x74, 0x65, 0x1a, 0x16, 0x2e, 0x72, 0x6f, 0x75,
 	0x74, 0x65, 0x72, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x12, 0x2f, 0x0a, 0x04, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x0f, 0x2e, 0x72,
-	0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e,
-	0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x36, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x14,
-	0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x37, 0x5a,
-	0x35, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6d, 0x69, 0x63, 0x72,
-	0x6f, 0x2f, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2f, 0x76, 0x33, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69,
-	0x63, 0x65, 0x2f, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b,
-	0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x73, 0x65, 0x22, 0x00, 0x12, 0x33, 0x0a, 0x04, 0x52, 0x65, 0x61, 0x64, 0x12, 0x13, 0x2e, 0x72,
+	0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x14, 0x2e, 0x72, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x52, 0x65, 0x61, 0x64, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x37, 0x5a, 0x35, 0x67, 0x69, 0x74,
+	0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x2f, 0x6d, 0x69,
+	0x63, 0x72, 0x6f, 0x2f, 0x76, 0x33, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x72,
+	0x6f, 0x75, 0x74, 0x65, 0x72, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x72, 0x6f, 0x75, 0x74,
+	0x65, 0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -913,53 +805,46 @@ func file_github_com_micro_micro_service_router_proto_router_proto_rawDescGZIP()
 }
 
 var file_github_com_micro_micro_service_router_proto_router_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_github_com_micro_micro_service_router_proto_router_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
+var file_github_com_micro_micro_service_router_proto_router_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_github_com_micro_micro_service_router_proto_router_proto_goTypes = []interface{}{
 	(EventType)(0),         // 0: router.EventType
-	(*Request)(nil),        // 1: router.Request
-	(*Response)(nil),       // 2: router.Response
-	(*ListResponse)(nil),   // 3: router.ListResponse
-	(*LookupRequest)(nil),  // 4: router.LookupRequest
-	(*LookupResponse)(nil), // 5: router.LookupResponse
-	(*QueryRequest)(nil),   // 6: router.QueryRequest
-	(*QueryResponse)(nil),  // 7: router.QueryResponse
-	(*WatchRequest)(nil),   // 8: router.WatchRequest
-	(*CreateResponse)(nil), // 9: router.CreateResponse
-	(*DeleteResponse)(nil), // 10: router.DeleteResponse
-	(*UpdateResponse)(nil), // 11: router.UpdateResponse
-	(*Event)(nil),          // 12: router.Event
-	(*Query)(nil),          // 13: router.Query
-	(*Route)(nil),          // 14: router.Route
-	nil,                    // 15: router.Route.MetadataEntry
+	(*ReadRequest)(nil),    // 1: router.ReadRequest
+	(*ReadResponse)(nil),   // 2: router.ReadResponse
+	(*LookupRequest)(nil),  // 3: router.LookupRequest
+	(*LookupResponse)(nil), // 4: router.LookupResponse
+	(*WatchRequest)(nil),   // 5: router.WatchRequest
+	(*CreateResponse)(nil), // 6: router.CreateResponse
+	(*DeleteResponse)(nil), // 7: router.DeleteResponse
+	(*UpdateResponse)(nil), // 8: router.UpdateResponse
+	(*Event)(nil),          // 9: router.Event
+	(*LookupOptions)(nil),  // 10: router.LookupOptions
+	(*Route)(nil),          // 11: router.Route
+	nil,                    // 12: router.Route.MetadataEntry
 }
 var file_github_com_micro_micro_service_router_proto_router_proto_depIdxs = []int32{
-	14, // 0: router.ListResponse.routes:type_name -> router.Route
-	13, // 1: router.LookupRequest.query:type_name -> router.Query
-	14, // 2: router.LookupResponse.routes:type_name -> router.Route
-	13, // 3: router.QueryRequest.query:type_name -> router.Query
-	14, // 4: router.QueryResponse.routes:type_name -> router.Route
-	0,  // 5: router.Event.type:type_name -> router.EventType
-	14, // 6: router.Event.route:type_name -> router.Route
-	15, // 7: router.Route.metadata:type_name -> router.Route.MetadataEntry
-	4,  // 8: router.Router.Lookup:input_type -> router.LookupRequest
-	8,  // 9: router.Router.Watch:input_type -> router.WatchRequest
-	14, // 10: router.Table.Create:input_type -> router.Route
-	14, // 11: router.Table.Delete:input_type -> router.Route
-	14, // 12: router.Table.Update:input_type -> router.Route
-	1,  // 13: router.Table.List:input_type -> router.Request
-	6,  // 14: router.Table.Query:input_type -> router.QueryRequest
-	5,  // 15: router.Router.Lookup:output_type -> router.LookupResponse
-	12, // 16: router.Router.Watch:output_type -> router.Event
-	9,  // 17: router.Table.Create:output_type -> router.CreateResponse
-	10, // 18: router.Table.Delete:output_type -> router.DeleteResponse
-	11, // 19: router.Table.Update:output_type -> router.UpdateResponse
-	3,  // 20: router.Table.List:output_type -> router.ListResponse
-	7,  // 21: router.Table.Query:output_type -> router.QueryResponse
-	15, // [15:22] is the sub-list for method output_type
-	8,  // [8:15] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	11, // 0: router.ReadResponse.routes:type_name -> router.Route
+	10, // 1: router.LookupRequest.options:type_name -> router.LookupOptions
+	11, // 2: router.LookupResponse.routes:type_name -> router.Route
+	0,  // 3: router.Event.type:type_name -> router.EventType
+	11, // 4: router.Event.route:type_name -> router.Route
+	12, // 5: router.Route.metadata:type_name -> router.Route.MetadataEntry
+	3,  // 6: router.Router.Lookup:input_type -> router.LookupRequest
+	5,  // 7: router.Router.Watch:input_type -> router.WatchRequest
+	11, // 8: router.Table.Create:input_type -> router.Route
+	11, // 9: router.Table.Delete:input_type -> router.Route
+	11, // 10: router.Table.Update:input_type -> router.Route
+	1,  // 11: router.Table.Read:input_type -> router.ReadRequest
+	4,  // 12: router.Router.Lookup:output_type -> router.LookupResponse
+	9,  // 13: router.Router.Watch:output_type -> router.Event
+	6,  // 14: router.Table.Create:output_type -> router.CreateResponse
+	7,  // 15: router.Table.Delete:output_type -> router.DeleteResponse
+	8,  // 16: router.Table.Update:output_type -> router.UpdateResponse
+	2,  // 17: router.Table.Read:output_type -> router.ReadResponse
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_github_com_micro_micro_service_router_proto_router_proto_init() }
@@ -969,7 +854,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Request); i {
+			switch v := v.(*ReadRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -981,7 +866,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 			}
 		}
 		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Response); i {
+			switch v := v.(*ReadResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -993,18 +878,6 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 			}
 		}
 		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*ListResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LookupRequest); i {
 			case 0:
 				return &v.state
@@ -1016,7 +889,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LookupResponse); i {
 			case 0:
 				return &v.state
@@ -1028,31 +901,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*QueryResponse); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WatchRequest); i {
 			case 0:
 				return &v.state
@@ -1064,7 +913,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CreateResponse); i {
 			case 0:
 				return &v.state
@@ -1076,7 +925,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DeleteResponse); i {
 			case 0:
 				return &v.state
@@ -1088,7 +937,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*UpdateResponse); i {
 			case 0:
 				return &v.state
@@ -1100,7 +949,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Event); i {
 			case 0:
 				return &v.state
@@ -1112,8 +961,8 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Query); i {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*LookupOptions); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1124,7 +973,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 				return nil
 			}
 		}
-		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_github_com_micro_micro_service_router_proto_router_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Route); i {
 			case 0:
 				return &v.state
@@ -1143,7 +992,7 @@ func file_github_com_micro_micro_service_router_proto_router_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_github_com_micro_micro_service_router_proto_router_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   15,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
