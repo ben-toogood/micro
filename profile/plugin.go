@@ -33,6 +33,7 @@ var prodClient = &Profile{
 	Name: "prod-client",
 	Setup: func(ctx *cli.Context) error {
 		microAuth.DefaultAuth = noop.NewAuth()
+		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
 		microRegistry.DefaultRegistry.Init(registry.Addrs("micro-registry:8000"))
 		return nil
 	},
