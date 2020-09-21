@@ -22,7 +22,6 @@ import (
 	natsStream "github.com/micro/go-micro/v3/events/stream/nats"
 	"github.com/micro/go-micro/v3/registry"
 	"github.com/micro/go-micro/v3/registry/etcd"
-	"github.com/micro/go-micro/v3/registry/mdns"
 	"github.com/micro/go-micro/v3/registry/memory"
 	"github.com/micro/go-micro/v3/router"
 	regRouter "github.com/micro/go-micro/v3/router/registry"
@@ -121,7 +120,7 @@ var Local = &Profile{
 		microStore.DefaultStore = file.NewStore()
 		microConfig.DefaultConfig, _ = config.NewConfig()
 		setBroker(http.NewBroker())
-		setRegistry(mdns.NewRegistry())
+		setRegistry(etcd.NewRegistry())
 		setupJWTRules()
 
 		var err error
