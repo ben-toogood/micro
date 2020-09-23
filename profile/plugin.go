@@ -17,6 +17,17 @@ import (
 	microStore "github.com/micro/micro/v3/service/store"
 )
 
+var production = &Profile{
+	Name: "production",
+	Setup: func(ctx *cli.Context) error {
+		microAuth.DefaultAuth = noop.NewAuth()
+		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
+		setRegistry(etcd.NewRegistry(registry.Addrs("etcd-cluster")))
+		microStore.DefaultStore = cockroach.NewStore(store.Nodes("postgresql://root@cockroachdb-cluster-public:26257?sslmode=disable"))
+		return nil
+	},
+}
+
 var prodServer = &Profile{
 	Name: "prod-server",
 	Setup: func(ctx *cli.Context) error {
@@ -40,6 +51,7 @@ var prodClient = &Profile{
 }
 
 func init() {
+	Register("production", prodServer)
 	Register("prod-server", prodServer)
 	Register("prod-client", prodClient)
 }
