@@ -51,7 +51,7 @@ var prodClient = &Profile{
 }
 
 func init() {
-	Register("production", prodServer)
+	Register("production", production)
 	Register("prod-server", prodServer)
 	Register("prod-client", prodClient)
 }
