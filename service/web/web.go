@@ -19,7 +19,6 @@ import (
 
 	"github.com/go-acme/lego/v3/providers/dns/cloudflare"
 	"github.com/gorilla/mux"
-	"github.com/micro/cli/v2"
 	res "github.com/micro/go-micro/v3/api/resolver"
 	"github.com/micro/go-micro/v3/api/resolver/subdomain"
 	"github.com/micro/go-micro/v3/api/server"
@@ -43,6 +42,7 @@ import (
 	log "github.com/micro/micro/v3/service/logger"
 	muregistry "github.com/micro/micro/v3/service/registry"
 	"github.com/serenize/snaker"
+	"github.com/urfave/cli/v2"
 )
 
 //Meta Fields of micro web

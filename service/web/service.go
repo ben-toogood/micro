@@ -141,7 +141,7 @@ func (s *webService) register() error {
 	for i := 0; i < 3; i++ {
 		// attempt to register
 		ttl := muserver.DefaultServer.Options().RegisterTTL
-		if err := muregistry.Register(s.srv, registry.RegisterTTL(ttl)); err != nil {
+		if err := muregistry.DefaultRegistry.Register(s.srv, registry.RegisterTTL(ttl)); err != nil {
 			// set the error
 			regErr = err
 			// backoff then retry
@@ -164,7 +164,7 @@ func (s *webService) deregister() error {
 		return nil
 	}
 
-	return muregistry.Deregister(s.srv)
+	return muregistry.DefaultRegistry.Deregister(s.srv)
 }
 
 func (s *webService) start() error {

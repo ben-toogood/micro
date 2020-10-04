@@ -6,7 +6,6 @@ import (
 	"os"
 	"strings"
 
-	ccli "github.com/micro/cli/v2"
 	golog "github.com/micro/go-micro/v3/logger"
 	prox "github.com/micro/go-micro/v3/proxy"
 	"github.com/micro/go-micro/v3/proxy/grpc"
@@ -19,6 +18,7 @@ import (
 	"github.com/micro/micro/v3/service"
 	log "github.com/micro/micro/v3/service/logger"
 	muruntime "github.com/micro/micro/v3/service/runtime"
+	ccli "github.com/urfave/cli/v2"
 
 	// services
 	api "github.com/micro/micro/v3/service/api"
@@ -32,12 +32,19 @@ import (
 	router "github.com/micro/micro/v3/service/router/server"
 	runtime "github.com/micro/micro/v3/service/runtime/server"
 	store "github.com/micro/micro/v3/service/store/server"
+	updater "github.com/micro/micro/v3/service/updater"
 	web "github.com/micro/micro/v3/service/web"
 
 	// misc commands
 	"github.com/micro/micro/v3/service/handler/exec"
 	"github.com/micro/micro/v3/service/handler/file"
 	"github.com/micro/micro/v3/service/health"
+
+	_ "github.com/micro/micro/v3/service/auth/cli"
+	_ "github.com/micro/micro/v3/service/config/cli"
+	_ "github.com/micro/micro/v3/service/network/cli"
+	_ "github.com/micro/micro/v3/service/runtime/cli"
+	_ "github.com/micro/micro/v3/service/store/cli"
 )
 
 // Run starts a micro service sidecar to encapsulate any app
@@ -203,6 +210,11 @@ var srvCommands = []srvCommand{
 		Name:    "web",
 		Command: web.Run,
 		Flags:   web.Flags,
+	},
+	{
+		Name:    "updater",
+		Command: updater.Run,
+		Flags:   updater.Flags,
 	},
 }
 
