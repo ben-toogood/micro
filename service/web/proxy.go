@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"strings"
+
+	"github.com/micro/go-micro/v3/api/server/cors"
 )
 
 type proxy struct {
@@ -16,6 +18,8 @@ type proxy struct {
 }
 
 func (p *proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	cors.SetHeaders(w, r)
+
 	if !isWebSocket(r) {
 		// the usual path
 		p.Router.ServeHTTP(w, r)
