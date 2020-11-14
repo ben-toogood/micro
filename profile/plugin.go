@@ -20,7 +20,11 @@ var production = &Profile{
 		microAuth.DefaultAuth = noop.NewAuth()
 		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
 		setRegistry(etcd.NewRegistry(registry.Addrs("etcd-cluster")))
-		microStore.DefaultStore = cockroach.NewStore(store.Nodes("postgresql://root@cockroachdb-cluster-public:26257?sslmode=disable"))
+
+		if ctx.Args().Get(1) == "config" {
+			microStore.DefaultStore = cockroach.NewStore(store.Nodes("postgresql://root@cockroachdb-cluster-public:26257?sslmode=disable"))
+		}
+
 		return nil
 	},
 }
