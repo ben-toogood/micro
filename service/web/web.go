@@ -34,7 +34,6 @@ import (
 	regRouter "github.com/micro/go-micro/v3/router/registry"
 	"github.com/micro/go-micro/v3/sync/memory"
 	inauth "github.com/micro/micro/v3/internal/auth"
-	"github.com/micro/micro/v3/internal/handler"
 	"github.com/micro/micro/v3/internal/helper"
 	"github.com/micro/micro/v3/internal/resolver/web"
 	"github.com/micro/micro/v3/internal/stats"
@@ -223,61 +222,63 @@ func (s *srv) notFoundHandler(w http.ResponseWriter, r *http.Request) {
 
 func (s *srv) indexHandler(w http.ResponseWriter, r *http.Request) {
 	cors.SetHeaders(w, r)
+	http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
+	return
 
-	if r.Method == "OPTIONS" {
-		return
-	}
+	// 	if r.Method == "OPTIONS" {
+	// 		return
+	// 	}
 
-	// if we're using the subdomain resolver, we want to use a custom domain
-	domain := registry.DefaultDomain
-	if res, ok := s.resolver.(*subdomain.Resolver); ok {
-		domain = res.Domain(r)
-	}
+	// 	// if we're using the subdomain resolver, we want to use a custom domain
+	// 	domain := registry.DefaultDomain
+	// 	if res, ok := s.resolver.(*subdomain.Resolver); ok {
+	// 		domain = res.Domain(r)
+	// 	}
 
-	services, err := s.registry.ListServices(registry.ListDomain(domain))
-	if err != nil {
-		log.Errorf("Error listing services: %v", err)
-	}
+	// 	services, err := s.registry.ListServices(registry.ListDomain(domain))
+	// 	if err != nil {
+	// 		log.Errorf("Error listing services: %v", err)
+	// 	}
 
-	type webService struct {
-		Name string
-		Link string
-		Icon string // TODO: lookup icon
-	}
+	// 	type webService struct {
+	// 		Name string
+	// 		Link string
+	// 		Icon string // TODO: lookup icon
+	// 	}
 
-	var prefix string
-	if len(Namespace) > 0 {
-		prefix = Namespace + "."
-	}
-	if len(Type) > 0 {
-		prefix = prefix + Type + "."
-	}
+	// 	var prefix string
+	// 	if len(Namespace) > 0 {
+	// 		prefix = Namespace + "."
+	// 	}
+	// 	if len(Type) > 0 {
+	// 		prefix = prefix + Type + "."
+	// 	}
 
-	var webServices []webService
-	for _, srv := range services {
-		if !strings.HasPrefix(srv.Name, prefix) {
-			continue
-		}
+	// 	var webServices []webService
+	// 	for _, srv := range services {
+	// 		if !strings.HasPrefix(srv.Name, prefix) {
+	// 			continue
+	// 		}
 
-		name := strings.TrimPrefix(srv.Name, prefix)
+	// 		name := strings.TrimPrefix(srv.Name, prefix)
 
-		// in the case of 3 letter things e.g m3o convert to M3O
-		if len(name) <= 3 && strings.ContainsAny(name, "012345789") {
-			name = strings.ToUpper(name)
-		}
+	// 		// in the case of 3 letter things e.g m3o convert to M3O
+	// 		if len(name) <= 3 && strings.ContainsAny(name, "012345789") {
+	// 			name = strings.ToUpper(name)
+	// 		}
 
-		webServices = append(webServices, webService{Name: name, Link: fmt.Sprintf("/%v/", name)})
-	}
+	// 		webServices = append(webServices, webService{Name: name, Link: fmt.Sprintf("/%v/", name)})
+	// 	}
 
-	sort.Slice(webServices, func(i, j int) bool { return webServices[i].Name < webServices[j].Name })
+	// 	sort.Slice(webServices, func(i, j int) bool { return webServices[i].Name < webServices[j].Name })
 
-	type templateData struct {
-		HasWebServices bool
-		WebServices    []webService
-	}
+	// 	type templateData struct {
+	// 		HasWebServices bool
+	// 		WebServices    []webService
+	// 	}
 
-	data := templateData{len(webServices) > 0, webServices}
-	s.render(w, r, indexTemplate, data)
+	// 	data := templateData{len(webServices) > 0, webServices}
+	// 	s.render(w, r, indexTemplate, data)
 }
 
 func (s *srv) registryHandler(w http.ResponseWriter, r *http.Request) {
@@ -503,10 +504,10 @@ func Run(ctx *cli.Context) error {
 	// the web handler itself
 	srv.HandleFunc("/favicon.ico", faviconHandler)
 	srv.HandleFunc("/404", srv.notFoundHandler)
-	srv.HandleFunc("/client", srv.callHandler)
-	srv.HandleFunc("/services", srv.registryHandler)
-	srv.HandleFunc("/service/{name}", srv.registryHandler)
-	srv.Handle("/rpc", handler.NewRPCHandler(resolver))
+	// srv.HandleFunc("/service/{name}", srv.registryHandler)
+	// srv.HandleFunc("/client", srv.callHandler)
+	// srv.HandleFunc("/services", srv.registryHandler)
+	// srv.Handle("/rpc", handler.NewRPCHandler(resolver))
 	srv.PathPrefix("/{service:[a-zA-Z0-9]+}").Handler(p)
 	srv.HandleFunc("/", srv.indexHandler)
 
