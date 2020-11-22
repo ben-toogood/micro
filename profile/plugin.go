@@ -6,14 +6,13 @@ import (
 	"github.com/micro/go-micro/v3/broker"
 	"github.com/micro/go-micro/v3/broker/nats"
 	"github.com/micro/go-micro/v3/client"
-	"github.com/micro/go-micro/v3/store"
-	"github.com/micro/go-micro/v3/store/cockroach"
+	"github.com/micro/go-micro/v3/config"
 
 	microAuth "github.com/micro/micro/v3/service/auth"
 	microClient "github.com/micro/micro/v3/service/client"
+	microConfig "github.com/micro/micro/v3/service/config"
 	k8sReg "github.com/micro/micro/v3/service/registry/kubernetes"
 	"github.com/micro/micro/v3/service/router/kubernetes"
-	microStore "github.com/micro/micro/v3/service/store"
 )
 
 var production = &Profile{
@@ -22,8 +21,8 @@ var production = &Profile{
 		microAuth.DefaultAuth = noop.NewAuth()
 		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
 		setRegistry(k8sReg.NewRegistry())
+		microConfig.DefaultConfig, _ = config.NewConfig()
 		microClient.DefaultClient.Init(client.Router(kubernetes.NewRouter()))
-		microStore.DefaultStore = cockroach.NewStore(store.Nodes("postgresql://root@cockroachdb-cluster-public:26257?sslmode=disable"))
 		return nil
 	},
 }
