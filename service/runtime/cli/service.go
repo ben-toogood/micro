@@ -209,7 +209,7 @@ func runService(ctx *cli.Context) error {
 	}
 
 	// add environment variable passed in via cli
-	var environment []string
+	environment := os.Environ()
 	for _, evar := range ctx.StringSlice("env_vars") {
 		for _, e := range strings.Split(evar, ",") {
 			if len(e) > 0 {

@@ -170,10 +170,6 @@ func Run(ctx *cli.Context) error {
 		opts = append(opts, server.TLSConfig(config))
 	}
 
-	if ctx.Bool("enable_cors") {
-		opts = append(opts, server.EnableCORS(true))
-	}
-
 	// create the router
 	var h http.Handler
 	r := mux.NewRouter()
@@ -302,7 +298,7 @@ func Run(ctx *cli.Context) error {
 	// initialise
 	api.Init(opts...)
 	// register the handler
-	api.Handle("/", h)
+	api.Handle("/", CombinedCORSHandler(h))
 
 	// Start API
 	if err := api.Start(); err != nil {
