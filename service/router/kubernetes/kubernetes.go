@@ -51,7 +51,7 @@ func (k *kubernetes) Table() router.Table {
 
 func (k *kubernetes) Lookup(service string, opts ...router.LookupOption) ([]router.Route, error) {
 	options := router.NewLookup(opts...)
-	address := strings.Replace(service, ".", "-", 2) + ":8080"
+	address := strings.ReplaceAll(service, ".", "-") + ":8080"
 
 	return []router.Route{
 		{
