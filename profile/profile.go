@@ -13,25 +13,15 @@ import (
 	"github.com/micro/go-micro/v3/auth/jwt"
 	"github.com/micro/go-micro/v3/auth/noop"
 	"github.com/micro/go-micro/v3/broker"
-	"github.com/micro/go-micro/v3/broker/http"
-	"github.com/micro/go-micro/v3/broker/nats"
 	"github.com/micro/go-micro/v3/client"
 	"github.com/micro/go-micro/v3/config"
-	evStore "github.com/micro/go-micro/v3/events/store"
-	memStream "github.com/micro/go-micro/v3/events/stream/memory"
 	natsStream "github.com/micro/go-micro/v3/events/stream/nats"
 	"github.com/micro/go-micro/v3/registry"
-	"github.com/micro/go-micro/v3/registry/etcd"
 	"github.com/micro/go-micro/v3/registry/memory"
 	"github.com/micro/go-micro/v3/router"
 	regRouter "github.com/micro/go-micro/v3/router/registry"
 	"github.com/micro/go-micro/v3/router/static"
-	"github.com/micro/go-micro/v3/runtime/kubernetes"
-	"github.com/micro/go-micro/v3/runtime/local"
 	"github.com/micro/go-micro/v3/server"
-	"github.com/micro/go-micro/v3/store"
-	"github.com/micro/go-micro/v3/store/cockroach"
-	"github.com/micro/go-micro/v3/store/file"
 	mem "github.com/micro/go-micro/v3/store/memory"
 	"github.com/micro/micro/v3/service/logger"
 
@@ -40,10 +30,8 @@ import (
 	microBroker "github.com/micro/micro/v3/service/broker"
 	microClient "github.com/micro/micro/v3/service/client"
 	microConfig "github.com/micro/micro/v3/service/config"
-	microEvents "github.com/micro/micro/v3/service/events"
 	microRegistry "github.com/micro/micro/v3/service/registry"
 	microRouter "github.com/micro/micro/v3/service/router"
-	microRuntime "github.com/micro/micro/v3/service/runtime"
 	microServer "github.com/micro/micro/v3/service/server"
 	microStore "github.com/micro/micro/v3/service/store"
 )
@@ -51,11 +39,8 @@ import (
 // profiles which when called will configure micro to run in that environment
 var profiles = map[string]*Profile{
 	// built in profiles
-	"ci":         CI,
 	"test":       Test,
-	"local":      Local,
 	"kubernetes": Kubernetes,
-	"platform":   Platform,
 	"client":     Client,
 	"service":    Service,
 }
@@ -88,49 +73,10 @@ func Load(name string) (*Profile, error) {
 	return v, nil
 }
 
-// CI profile to use for CI tests
-var CI = &Profile{
-	Name: "ci",
-	Setup: func(ctx *cli.Context) error {
-		microAuth.DefaultAuth = jwt.NewAuth()
-		microRuntime.DefaultRuntime = local.NewRuntime()
-		microStore.DefaultStore = file.NewStore()
-		microConfig.DefaultConfig, _ = config.NewConfig()
-		microEvents.DefaultStream, _ = memStream.NewStream()
-		microEvents.DefaultStore = evStore.NewStore(evStore.WithStore(microStore.DefaultStore))
-		setBroker(http.NewBroker())
-		setRegistry(etcd.NewRegistry())
-		setupJWTRules()
-		return nil
-	},
-}
-
 // Client profile is for any entrypoint that behaves as a client
 var Client = &Profile{
 	Name:  "client",
 	Setup: func(ctx *cli.Context) error { return nil },
-}
-
-// Local profile to run locally
-var Local = &Profile{
-	Name: "local",
-	Setup: func(ctx *cli.Context) error {
-		microAuth.DefaultAuth = noop.NewAuth()
-		microRuntime.DefaultRuntime = local.NewRuntime()
-		microStore.DefaultStore = file.NewStore()
-		microConfig.DefaultConfig, _ = config.NewConfig()
-		setBroker(http.NewBroker())
-		setRegistry(etcd.NewRegistry())
-		setupJWTRules()
-
-		var err error
-		microEvents.DefaultStream, err = memStream.NewStream()
-		if err != nil {
-			logger.Fatalf("Error configuring stream: %v", err)
-		}
-
-		return nil
-	},
 }
 
 // Kubernetes profile to run on kubernetes
@@ -145,32 +91,6 @@ var Kubernetes = &Profile{
 		// store ...
 		microAuth.DefaultAuth = jwt.NewAuth()
 		setupJWTRules()
-		return nil
-	},
-}
-
-// Platform is for running the micro platform
-var Platform = &Profile{
-	Name: "platform",
-	Setup: func(ctx *cli.Context) error {
-		microAuth.DefaultAuth = jwt.NewAuth()
-		microConfig.DefaultConfig, _ = config.NewConfig()
-		microRuntime.DefaultRuntime = kubernetes.NewRuntime()
-		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
-		setRegistry(etcd.NewRegistry(registry.Addrs("etcd-cluster")))
-		setupJWTRules()
-
-		var err error
-		microEvents.DefaultStream, err = natsStream.NewStream(natsStreamOpts(ctx)...)
-		if err != nil {
-			logger.Fatalf("Error configuring stream: %v", err)
-		}
-
-		// the cockroach store will connect immediately so the address must be passed
-		// when the store is created. The cockroach store address contains the location
-		// of certs so it can't be defaulted like the broker and registry.
-		microStore.DefaultStore = cockroach.NewStore(store.Nodes(ctx.String("store_address")))
-		microEvents.DefaultStore = evStore.NewStore(evStore.WithStore(microStore.DefaultStore))
 		return nil
 	},
 }

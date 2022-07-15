@@ -12,7 +12,7 @@ import (
 	microClient "github.com/micro/micro/v3/service/client"
 	microConfig "github.com/micro/micro/v3/service/config"
 	k8sReg "github.com/micro/micro/v3/service/registry/kubernetes"
-	"github.com/micro/micro/v3/service/router/kubernetes"
+	"github.com/micro/micro/v3/service/router/static"
 )
 
 var production = &Profile{
@@ -22,7 +22,7 @@ var production = &Profile{
 		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
 		setRegistry(k8sReg.NewRegistry())
 		microConfig.DefaultConfig, _ = config.NewConfig()
-		microClient.DefaultClient.Init(client.Router(kubernetes.NewRouter()))
+		microClient.DefaultClient.Init(client.Router(static.NewRouter()))
 		return nil
 	},
 }
