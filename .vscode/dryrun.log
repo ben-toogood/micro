@@ -1,0 +1,5 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory `/Users/ben/go/src/github.com/ben-toogood/micro'
+go build -a -installsuffix cgo -ldflags "-s -w -X github.com/micro/micro/v3/cmd.BuildDate=1659868022 -X github.com/micro/micro/v3/cmd.GitCommit=4b809f08 -X github.com/micro/micro/v3/cmd.GitTag=v3.0.0-beta" -o micro
+make: Leaving directory `/Users/ben/go/src/github.com/ben-toogood/micro'
+ 

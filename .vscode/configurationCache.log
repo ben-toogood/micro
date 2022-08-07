@@ -1,0 +1,1 @@
+{"buildTargets":["all","build","clean","docker","test","vendor","vet"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}
