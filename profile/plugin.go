@@ -1,6 +1,8 @@
 package profile
 
 import (
+	"fmt"
+
 	"github.com/micro/cli/v2"
 	"github.com/micro/go-micro/v3/auth/noop"
 	"github.com/micro/go-micro/v3/broker"
@@ -18,6 +20,8 @@ import (
 var production = &Profile{
 	Name: "production",
 	Setup: func(ctx *cli.Context) error {
+		fmt.Println("Using production micro configuration")
+
 		microAuth.DefaultAuth = noop.NewAuth()
 		setBroker(nats.NewBroker(broker.Addrs("nats-cluster")))
 		setRegistry(k8sReg.NewRegistry())
